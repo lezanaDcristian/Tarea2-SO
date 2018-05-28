@@ -1,9 +1,10 @@
 #include "../headers/functions.h"
 
 // Proceso hijo implementado con pipes
-void childProcessPipes(int *list,int *fd,int wait_time){
+/* LISTA */
+void childProcessPipe(int *list,int *fd,int wait_time){
 	sleep(wait_time);
-	printf("Hijo terminado! (pid %d):\n",(int)getpid());
+	printf("¡Hijo terminado! (pid %d):\n",(int)getpid());
 	printf("wait_time: %d\n",wait_time);
 	printf("Lista original: {");
 	int i;
@@ -22,13 +23,13 @@ void childProcessPipes(int *list,int *fd,int wait_time){
 }
 
 // Proceso hijo implementado con shared memory
-void childProcessSharedMemory(int *list){
-	int rd=random()%30+30;// Tiempo de espera entre 30 y 60 segundos
-	
+/* INCOMPETA */
+void childProcessSharedMemory(int *list){	
 	return;
 }
 
 // Función QuickSort (extraida de inet)
+/* LISTA */
 void quickSort(int lista[], int lim_sup, int lim_inf){
     int izq,der,temporal,pivote;
     izq=lim_inf;
@@ -58,6 +59,7 @@ void quickSort(int lista[], int lim_sup, int lim_inf){
 }
 
 // Genera una lista de números enteros random
+/* LISTA */
 int *randomList(int len,int min,int max){
 	if(len<1 || max<min)
 		return NULL;

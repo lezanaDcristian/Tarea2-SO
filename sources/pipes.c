@@ -1,93 +1,53 @@
 #include "../headers/functions.h"
 
 int main(int argc,char **argv){
-	srand(time(NULL));
-	pid_t pid1,pid2,pid3,pid4;
-	int status1,status2,status3,status4;
-	int fd1[2],fd2[2],fd3[2],fd4[2];
-	int wait_time1,wait_time2,wait_time3,wait_time4;
-	int *list1,*list2,*list3,*list4;
-	pipe(fd1);
-	pipe(fd2);
-	pipe(fd3);
-	pipe(fd4);
-	wait_time1=rand()%30+30;
-	wait_time2=rand()%30+30;
-	wait_time3=rand()%30+30;
-	wait_time4=rand()%30+30;
-	list1=randomList(TOTAL_NUMBERS,1,1000);
-	list2=randomList(TOTAL_NUMBERS,1,1000);
-	list3=randomList(TOTAL_NUMBERS,1,1000);
-	list4=randomList(TOTAL_NUMBERS,1,1000);
-	pid1=fork();
-	if(pid1<0){//se produce un error
-		fprintf(stderr,"Fork Falla\n");
-		return 1;
+	srandom(time(NULL));
+	/* Declaración de par+ametros a utilizar */
+	pid_t pid[TOTAL_CHILDS];
+	int status[TOTAL_CHILDS];
+	int fd[TOTAL_CHILDS][2];
+	int wait_time[TOTAL_CHILDS];
+	int *random_list[TOTAL_CHILDS];
+	int child;
+	/* Inicialización de parámetros (pipes, wait_time, random_list[child])*/
+	for(child=0;child<TOTAL_CHILDS;child++){
+		if(pipe(fd[child])==-1){
+			fprintf(stderr,"Pipe failed\n");
+			return 1;
+		}
+		wait_time[child]=MIN_WAIT_TIME+random()%(MAX_WAIT_TIME-MIN_WAIT_TIME);
+		random_list[child]=randomList(TOTAL_NUMBERS,MIN_RANDOM_NUMBER,MAX_RANDOM_NUMBER);
 	}
-	else if(pid1==0){//proceso hijo 1
-		childProcessPipes(list1,fd1,wait_time1);
-	}
-	else{//proceso padre
-		pid2=fork();
-		if(pid2<0){
+	/* Generación de procesos hijos */
+	for(child=0;child<TOTAL_CHILDS;child++){
+		pid[child]=fork();
+		if(pid[child]<0){//se produce un error
 			fprintf(stderr,"Fork Falla\n");
 			return 1;
 		}
-		else if(pid2==0){//proceso hijo 2
-			childProcessPipes(list2,fd2,wait_time2);
-		}
-		else{//proceso padre
-			pid3=fork();
-			if(pid3<0){
-				fprintf(stderr,"Fork Falla\n");
-				return 1;
-			}
-			else if(pid3==0){//proceso hijo 3
-				childProcessPipes(list3,fd3,wait_time3);
-			}
-			else{//proceso padre
-				pid4=fork();
-				if(pid4<0){
-					fprintf(stderr,"Fork Falla\n");
-					return 1;
-				}
-				else if(pid4==0){//proceso hijo 4
-					childProcessPipes(list4,fd4,wait_time4);
-				}
-				else {//proceso padre
-					waitpid(pid1,&status1,0);
-					waitpid(pid2,&status2,0);
-					waitpid(pid3,&status3,0);
-					waitpid(pid4,&status4,0);
-					close(fd1[WRITE_END]);
-					close(fd2[WRITE_END]);
-					close(fd3[WRITE_END]);
-					close(fd4[WRITE_END]);
-					read(fd1[READ_END],list1,sizeof(int)*TOTAL_NUMBERS);
-					read(fd2[READ_END],list2,sizeof(int)*TOTAL_NUMBERS);
-					read(fd3[READ_END],list3,sizeof(int)*TOTAL_NUMBERS);
-					read(fd4[READ_END],list4,sizeof(int)*TOTAL_NUMBERS);
-					int i;
-					printf("Padre:\n");
-					printf("Hijo 1 (pid %d): {",(int)pid1);
-					for(i=0;i<TOTAL_NUMBERS;i++)
-						printf("%d,",list1[i]);
-					printf("\b}\n");
-					printf("Hijo 2 (pid %d): {",(int)pid2);
-					for(i=0;i<TOTAL_NUMBERS;i++)
-						printf("%d,",list2[i]);
-					printf("\b}\n");
-					printf("Hijo 3 (pid %d): {",(int)pid3);
-					for(i=0;i<TOTAL_NUMBERS;i++)
-						printf("%d,",list3[i]);
-					printf("\b}\n");
-					printf("Hijo 4 (pid %d): {",(int)pid4);
-					for(i=0;i<TOTAL_NUMBERS;i++)
-						printf("%d,",list4[i]);
-					printf("\b}\n");
-				}
-			}
+		if(pid[child]==0){//proceso hijo child-ésimo
+			childProcessPipe(random_list[child],fd[child],wait_time[child]);
+			return 0;
 		}
 	}
+	/* Luego de generar todos los hijos, hay que esperar a cada uno */
+	printf("¡Hijos generados con éxito! (%d en total)\n",TOTAL_CHILDS);
+	printf("Esperando que todos terminen...\n\n");
+	for(child=0;child<TOTAL_CHILDS;child++)
+		waitpid(pid[child],&status[child],0);
+	/* Finalmente se lee y muestra por pantalla el resultado */
+	printf("Lectura del Padre:\n");
+	int i;
+	int list_buffer[TOTAL_CHILDS][TOTAL_NUMBERS];
+	for(child=0;child<TOTAL_CHILDS;child++){
+		close(fd[child][WRITE_END]);
+		read(fd[child][READ_END],list_buffer[child],sizeof(int)*TOTAL_NUMBERS);
+		close(fd[child][READ_END]);
+		printf("Hijo %d (pid %d): {",child,(int)pid[child]);
+		for(i=0;i<TOTAL_NUMBERS;i++)
+			printf("%d,",list_buffer[child][i]);
+		printf("\b}\n");
+	}
+	printf("\n");
 	return 0;
 }
