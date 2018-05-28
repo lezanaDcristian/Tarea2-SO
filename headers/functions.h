@@ -9,22 +9,21 @@
 #include <string.h>
 #include <time.h>
 
-// Global definitions:
-#define TAMANO_LISTA 20  
+// Definiciones globales
+#define TOTAL_NUMBERS  15
+#define READ_END       0
+#define WRITE_END      1
 
-// Function declarations:
+// Declaración de funciones
 
-// Función adquiere los datos dentro del archivo de texto.
-void GenerarLista(char *, int *);
+// Proceso hijo implementado con pipes
+void childProcessPipes(int*,int*,int);
 
-// Función toma una lista y la escribe en un archivo de texto.
-void EscribirLista(int *, char *);
+// Proceso hijo implementado con shared memory
+void childProcessSharedMemory(int*);
 
 // Función QuickSort (Extraida de inet)
-void QuickSort(int *, int , int);
-
-// Proceso que realiza el hijo
-void ProcesoHijo(char *,char *);
+void quickSort(int *, int , int);
 
 // Genera una lista de números enteros random
 int *randomList(int,int,int);
