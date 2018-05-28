@@ -1,4 +1,4 @@
-#include "./functions.h"
+#include "../headers/functions.h"
 
 // Función adquiere los datos dentro del archivo de texto.
 void GenerarLista(char NombreArchivo[], int lista[]){
