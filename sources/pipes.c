@@ -2,14 +2,14 @@
 
 int main(int argc,char **argv){
 	srandom(time(NULL));
-	/* Declaración de par+ametros a utilizar */
+	/* Declaración de parámetros a utilizar */
 	pid_t pid[TOTAL_CHILDS];
 	int status[TOTAL_CHILDS];
 	int fd[TOTAL_CHILDS][2];
 	int wait_time[TOTAL_CHILDS];
 	int *random_list[TOTAL_CHILDS];
+	/* Inicialización de parámetros (pipes, wait_time, random_list[child]) */
 	int child;
-	/* Inicialización de parámetros (pipes, wait_time, random_list[child])*/
 	for(child=0;child<TOTAL_CHILDS;child++){
 		if(pipe(fd[child])==-1){
 			fprintf(stderr,"Pipe failed\n");
@@ -26,7 +26,7 @@ int main(int argc,char **argv){
 			return 1;
 		}
 		if(pid[child]==0){//proceso hijo child-ésimo
-			childProcessPipe(random_list[child],fd[child],wait_time[child]);
+			childProcessPipe(random_list[child],wait_time[child],fd[child]);
 			return 0;
 		}
 	}
@@ -43,7 +43,7 @@ int main(int argc,char **argv){
 		close(fd[child][WRITE_END]);
 		read(fd[child][READ_END],list_buffer[child],sizeof(int)*TOTAL_NUMBERS);
 		close(fd[child][READ_END]);
-		printf("Hijo %d (pid %d): {",child,(int)pid[child]);
+		printf("Hijo %d (pid %d): {",child+1,(int)pid[child]);
 		for(i=0;i<TOTAL_NUMBERS;i++)
 			printf("%d,",list_buffer[child][i]);
 		printf("\b}\n");

@@ -3,11 +3,16 @@
 
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/shm.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <fcntl.h>
+#include <errno.h>
 
 // Definiciones globales
 
@@ -26,13 +31,13 @@
 // Declaración de funciones
 
 // Proceso hijo implementado con pipes
-void childProcessPipe(int*,int*,int);
+void childProcessPipe(int*,int,int*);
 
 // Proceso hijo implementado con shared memory
-void childProcessSharedMemory(int*);
+void childProcessSharedMemory(int*,int);
 
 // Función QuickSort (Extraida de inet)
-void quickSort(int *, int , int);
+void quickSort(int*,int,int);
 
 // Genera una lista de números enteros random
 int *randomList(int,int,int);

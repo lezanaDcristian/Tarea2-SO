@@ -2,7 +2,7 @@
 
 // Proceso hijo implementado con pipes
 /* LISTA */
-void childProcessPipe(int *list,int *fd,int wait_time){
+void childProcessPipe(int *list,int wait_time,int *fd){
 	sleep(wait_time);
 	printf("¡Hijo terminado! (pid %d):\n",(int)getpid());
 	printf("wait_time: %d\n",wait_time);
@@ -23,8 +23,37 @@ void childProcessPipe(int *list,int *fd,int wait_time){
 }
 
 // Proceso hijo implementado con shared memory
-/* INCOMPETA */
-void childProcessSharedMemory(int *list){	
+/* LISTA */
+void childProcessSharedMemory(int *list,int wait_time){
+	sleep(wait_time);
+	printf("¡Hijo terminado! (pid %d):\n",(int)getpid());
+	printf("wait_time: %d\n",wait_time);
+	printf("Lista original: {");
+	int i;
+	for(i=0;i<TOTAL_NUMBERS;i++)
+		printf("%d,",list[i]);
+	printf("\b}\n");
+	quickSort(list,TOTAL_NUMBERS-1,0);
+	printf("Lista ordenada: {");
+	for(i=0;i<TOTAL_NUMBERS;i++)
+		printf("%d,",list[i]);
+	printf("\b}\n");
+	/* Creación del segmento de memoria compartida */
+	char shm_name[15];
+	sprintf(shm_name,"/shm-hijo-%d",(int)getpid());
+	int shm_fd=shm_open(shm_name,O_CREAT|O_RDWR,0666);
+	/* Configuración del tamaño de la memoria */
+	ftruncate(shm_fd,sizeof(int)*TOTAL_NUMBERS);
+	/* Mapear la memoria en un puntero local */
+	void *ptr=mmap(NULL,4096,PROT_READ|PROT_WRITE,MAP_SHARED,shm_fd,0);
+	/* Escribir los datos */
+	char buffer[20];
+	for(i=0;i<TOTAL_NUMBERS;i++){
+		sprintf(buffer,"%d,",list[i]);
+		sprintf(ptr,"%s",buffer);
+		ptr+=sizeof(char)*strlen(buffer);
+	}
+	printf("\n");
 	return;
 }
 
