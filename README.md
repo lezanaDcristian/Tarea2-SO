@@ -1,4 +1,4 @@
-#Tarea2-SO
+# Tarea2-SO
 Se solicita generar un proceso padre, en el lenguaje C, que realice las siguientes acciones:
 
 1) Creará cuatro hijos: Cada uno de ellos implementa una función de ordenamiento Quick Sort a un conjunto
@@ -12,7 +12,7 @@ desplegarlos por consola.
 4) La comunicación entre padre e hijos se debe implementar de dos formas: mediante *pipes* y mediante *memoria*
 *compartida*.
 
-#Sobre la compilación y ejecución de la tarea
+# Sobre la compilación y ejecución de la tarea
 
 Para compilar los archivos se debe escribir en consola *make*, el cual generará dos archivos ejecutables:
 *elo322_tarea2_pipes.out* y *elo322_tarea2_shm.out* los cuales corresponden a ambas implementaciones pedidas.
