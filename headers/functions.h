@@ -34,7 +34,7 @@
 void childProcessPipe(int*,int,int*);
 
 // Proceso hijo implementado con shared memory
-void childProcessSharedMemory(int*,int);
+void childProcessSharedMemory(char*,int);
 
 // Función QuickSort (Extraida de inet)
 void quickSort(int*,int,int);
